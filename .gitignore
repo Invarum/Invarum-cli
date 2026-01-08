@@ -1,0 +1,18 @@
+# Virtual Environments
+.venv/
+venv/
+env/
+
+# Python compiled files (junk)
+__pycache__/
+*.pyc
+
+# Build artifacts (created when you build the package)
+dist/
+build/
+*.egg-info/
+
+# Local settings
+.vscode/
+.idea/
+.DS_Store
