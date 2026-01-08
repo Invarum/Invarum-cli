@@ -29,6 +29,7 @@ class InvarumClient:
             return resp.json()["run_id"]
         except requests.exceptions.HTTPError as e:
             if e.response.status_code == 401:
+                #print("error is: ", e)
                 raise ValueError("Invalid API Key")
             raise e
 

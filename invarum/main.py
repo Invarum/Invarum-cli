@@ -1,10 +1,11 @@
-# cli/invarum/main.py
+# invarum-cli/invarum/main.py
 import typer
 import time
 from rich.console import Console
 from rich.table import Table
 from invarum import config
 from invarum.client import InvarumClient
+from invarum import __version__
 
 app = typer.Typer(
     name="invarum",
@@ -82,7 +83,7 @@ def run(
 
     table.add_row("Alpha (Task)",      fmt(metrics.get('alpha')))
     table.add_row("Beta (Coherence)",  fmt(metrics.get('beta')))
-    table.add_row("Gamma (Entropy)",   fmt(metrics.get('gamma')))
+    table.add_row("Gamma (Order/Entropy)",   fmt(metrics.get('gamma')))
     table.add_row("Delta (Efficiency)",fmt(metrics.get('delta')))
     
     console.print(table)
@@ -100,4 +101,22 @@ def run(
         console.print(f"\n[bold yellow]POLICY STATUS UNKNOWN[/bold yellow]")
 
     # Optional: Print Dashboard Link
-    console.print(f"\nView full details: https://app.invarum.com/runs/{run_id}")
+    console.print(f"\nView full details and manifest: https://app.invarum.com/runs/{run_id}")
+
+def version_callback(value: bool):
+    if value:
+        print(f"Invarum CLI Version: {__version__}")
+        raise typer.Exit()
+
+@app.callback()
+def main(
+    version: bool = typer.Option(
+        None, 
+        "--version", 
+        "-v", 
+        callback=version_callback, 
+        is_eager=True,
+        help="Show the version and exit."
+    )
+):
+    return
