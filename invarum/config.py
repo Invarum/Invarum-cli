@@ -1,4 +1,4 @@
-# cli/invarum/config.py
+# invarum-cli/invarum/config.py
 import os
 import json
 from pathlib import Path

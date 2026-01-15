@@ -1,78 +1,125 @@
-
-
 # ⚡ Invarum CLI
 
-The command-line interface for **Invarum**, the Physics-Based Prompt Engineering Framework (PBPEF).
+**Prompt it. Measure it. Fix it. Prove it. Bring certainty to LLM quality—and evidence.**
 
-Invarum is a **governance grade** quality engineering platform that provides observability, scoring, constraint tooling, and WORM compatible recording to optimize prompt-response interactions. The CLI allows you to trigger the physics engine directly from your terminal or CI/CD pipeline, offloading the heavy computation to the Invarum Cloud.
+The Invarum CLI is a thin, fast client for the Invarum Cloud Engine. Use it to run quantitative LLM evaluations, generate **audit-ready evidence bundles**, and enforce **policy gates** in CI/CD—without leaving the command line.
 
-> **🌟 Get Started:** You must have an account and an API Key to use this tool.  
-> Sign up and generate keys at **[app.invarum.com](https://app.invarum.com)**.
+> **Get started:** You need an Invarum account and API key.
+> Sign up at **[app.invarum.com](https://app.invarum.com)**.
 
 ---
 
 ## 📦 Features
 
-- **Remote Physics Engine**  
-  Submits prompts to the Invarum Cloud, where they are scored against our 4D energy model:  
-  - **α** (Task Score)  
-  - **β** (Semantic Coherence)  
-  - **γ** (Order / Output Uncertainty)  
-  - **δ** (Efficiency)
+### 1) Headless Invarum Engine
 
-- **Headless Execution**  
-  Designed for developers. Run prompt evaluations without opening a browser. Perfect for regression testing and CI/CD pipelines.
+Submit prompts to the Invarum Cloud, where they’re evaluated with the deterministic **4D Energy Model**.
 
-- **Policy Gating**  
-  Immediate Pass/Fail feedback based on your configured Policy Profile (Governance).
+* **Live status:** stream progress and view the final response in your terminal
+* **Scoring:** get immediate **α / β / γ / δ** scores in a readable table
 
-- **Secure Authentication**  
-  Supports long-lived API Keys (`inv_sk_...`) for secure, authenticated access to your private workspace.
+### 2) Audit-Ready Evidence
 
-- **Web Synchronization**  
-  Every run triggered via CLI is instantly available in your **[Web Dashboard](https://app.invarum.com)** for deep inspection (Sensitivity Analysis, Evidence Bundles, and Operator Traces).
+Export forensic artifacts for any run—ready to attach to an **incident review** or internal audit packet.
+
+* **JSON evidence bundle:** machine-readable export containing scores, policy outcomes, metadata, and **SHA-256** integrity hashes
+* **PDF report:** download a formatted audit report via the CLI
+
+### 3) CI/CD Gating
+
+Stop bad prompts from reaching production.
+
+* Use `--strict` to return **exit code 1** when a run fails policy gates
+* Ideal for GitHub Actions, GitLab CI, and regression test suites
+
+### 4) Enterprise Observability (OTel)
+
+Invarum is **OpenTelemetry (OTel) native**.
+
+* Each run can emit standard OTel traces
+* Connect Datadog, Honeycomb, or New Relic to view quality signals alongside operational telemetry
+
+---
+
+## ⚛️ The Invarum Engine
+
+Unlike “LLM-as-a-judge” tools that depend on subjective model opinions, Invarum evaluates outputs using a deterministic pipeline and returns **repeatable scores**, **policy gate decisions**, and **audit-ready evidence bundles** suitable for **incident review** and internal governance.
+
+### The 4D Energy Model
+
+We measure LLM behavior along four orthogonal axes:
+
+| Metric                | Signal                     | What it Measures                                                                                                             |
+| :-------------------- | :------------------------- | :--------------------------------------------------------------------------------------------------------------------------- |
+| **α TaskScore**       | **Task alignment**         | Did the output follow the request and constraints (format, requirements, and reference match when provided)?                 |
+| **β Coherence**       | **Semantic continuity**    | Did the response stay on-track—logically consistent, well-structured, and free of drift or contradiction?                    |
+| **γ Entropy / Order** | **Variance & determinism** | Is output variability appropriate for the domain and task (stable for scientific/legal; broader for creative/brainstorming)? |
+| **δ Efficiency**      | **Cost-to-value**          | How much useful information was delivered per token (and time), relative to the expected structure and verbosity?            |
+
+> The physics analogy is intentional: scores behave like measurable state variables, and policy gates define what “stable” looks like for a given domain.
+
+### Policy-as-Code Gating
+
+Runs are evaluated against a selected **Policy Profile** (internal governance by default). The engine returns:
+
+* **Gate results** (must-pass requirements and scored thresholds)
+* An overall verdict plus an explicit decision state:
+  **pass / pass_with_advisory / fail_with_advisory / fail**
+* Structured **advisories** with recommended remediation steps
+
+### Security & Privacy
+
+Invarum is designed for auditability without unnecessary data retention:
+
+1. **BYOK:** your LLM API keys are encrypted at rest and never exposed in plaintext.
+2. **Configurable I/O retention:** prompts and responses can be stored temporarily for debugging or minimized/redacted depending on workspace policy.
+3. **Immutable evidence:** evidence bundles retain **SHA-256** hashes and run metadata for integrity verification—even when raw text retention is minimized.
 
 ---
 
 ## 🚀 Installation
 
-Install directly via pip (Git method):
+Install directly via pip:
 
 ```bash
-# Install the latest version
 pip install git+https://github.com/Invarum/invarum-cli.git
-
-# Verify installation
-invarum --help
 ```
 
-📌 Requires Python 3.9+
+*Requires Python 3.9+*
 
 ---
 
-## 🛠 Getting Started
+## ⚡ Quickstart
 
-### 1. Get your API Key
-Log in to the **[Invarum Dashboard](https://app.invarum.com/settings)**, navigate to **Settings**, and generate a new **Developer Access Key**.
+### 1) Get an API Key
 
-### 2. Authenticate
-Save your key locally. This persists your credentials for future runs.
+Log in to the dashboard: **Settings → Developer Access Keys**.
+
+### 2) Authenticate
+
+Save your key locally. This persists until you revoke it.
 
 ```bash
 invarum login --key inv_sk_your_secret_key_here
 ```
 
-### 3. Execute a Run
-Submit a prompt to the engine. The CLI will poll for completion and display the Energy Scores.
+### 3) Run an Evaluation
 
 ```bash
-invarum run "Explain quantum entanglement to a five-year-old."
+invarum run "Summarize the main findings of this abstract in 5 bullets." --domain scientific
 ```
 
-**Output:**
+**Example Output:**
+
 ```text
-Running physics engine...
+Running evaluation...
 Run ID: run_a1b2c3d4
+
+╭─ LLM Response ──────────────────────────────────────╮
+│ 1. The study establishes a correlation between...   │
+│ 2. Methodology involved a double-blind trial...     │
+│ ...                                                 │
+╰─────────────────────────────────────────────────────╯
 
 ┏━━━━━━━━━━━━━━━━━━━━┳━━━━━━━┓
 ┃ Metric             ┃ Score ┃
@@ -83,71 +130,106 @@ Run ID: run_a1b2c3d4
 │ Delta (Efficiency) │ 0.780 │
 └────────────────────┴───────┘
 
-PASSED POLICY GATES
+Decision: PASS_WITH_ADVISORY
+Policy Profile: internal_governance_default
 View details: https://app.invarum.com/runs/run_a1b2c3d4
 ```
 
+> Tip: Open “View details” to inspect diagnostics, sensitivity analysis, and operator traces in the dashboard.
+
 ---
 
-##⚙️ Advanced Usage
+## 🛠 Advanced Usage
 
-### Specify Task Type
-Help the engine optimize scoring by declaring the task intent (default is auto-detected).
+### Reference-Based Grading
+
+Provide a gold-standard answer to enable higher-fidelity grading when appropriate.
 
 ```bash
-invarum run "Extract the dates from this contract..." --task extract
+invarum run "Explain quantum entanglement" --reference "Quantum entanglement is a phenomenon where..."
 ```
-*Supported tasks: `summarize`, `qa`, `brainstorm`, `fiction`, `extract`, `code`.*
+
+Load from files:
+
+```bash
+invarum run -f prompt.txt --reference-file ground_truth.txt
+```
+
+### Task, Domain, and Generation Overrides
+
+Help classification or tune generation.
+
+```bash
+# Specify task and domain
+invarum run "extract dates from this contract" --task extract --domain legal
+
+# Override model temperature
+invarum run "Write a creative poem" --temp 0.9
+```
+
+### Export Evidence (Incident Review / Audit Packet)
+
+```bash
+# Export JSON evidence bundle
+invarum export run_a1b2c3d4 --format json --output evidence.json
+
+# Export formatted PDF audit report
+invarum export run_a1b2c3d4 --format pdf --output report.pdf
+```
 
 ### CI/CD Integration
-The CLI supports environment variables for automation. It returns exit code `0` on success and `1` on policy failure, making it ideal for build pipelines.
+
+The CLI supports environment variables for automation.
 
 ```bash
-# In your GitHub Actions / GitLab CI
 export INVARUM_API_KEY="inv_sk_..."
-invarum run "Release candidate prompt test"
+
+# --strict forces a non-zero exit code on policy failure
+invarum run -f prompt.txt --strict --json > results.json
 ```
 
 ---
 
 ## 🧠 Architecture
 
-The Invarum ecosystem is split into two parts:
+Invarum uses a thin client architecture:
 
-1.  **The CLI (This Repo):** A lightweight "Thin Client." It handles authentication, input formatting, and result rendering. It contains no proprietary logic.
-2.  **The Cloud Engine (API):** The heavy lifting happens on Invarum's secure servers. This is where the **PromptState Pipeline** runs:
+1. **CLI (this repo):** auth, file IO, request formatting, and rendering. No proprietary scoring logic runs locally.
+2. **Cloud engine:** prompts are evaluated by the PBPEF pipeline, producing scores, policy outcomes, traces, and evidence artifacts.
 
 ```
-[CLI Request] → [API Gateway] → [Physics Engine] → [Supabase DB]
-                                      ↓
-                               [Scores & Evidence]
-                                      ↓
-[CLI Response] ← [JSON Result] ← [API Gateway]
+[CLI] → [API Gateway] → [PBPEF Pipeline] → [Run Record + Evidence]
+  ↑                                                  ↓
+  └────────────── summarized results ────────────────┘
 ```
 
 ---
 
 ## 🔬 Roadmap
 
-- [x] Cloud-based Energy Scoring
-- [x] CLI Runner with Polling
-- [x] Web Dashboard Synchronization
-- [x] API Key Authentication
-- [ ] Local Artifact Downloads (PDF Evidence)
-- [ ] Batch Processing (CSV/JSONL input)
-- [ ] `invarum check` for regression testing files
+**MVP (Live Now):**
+
+* [x] Cloud-based energy scoring (α/β/γ/δ)
+* [x] Policy gating & exit codes
+* [x] Web dashboard sync
+* [x] Evidence export (JSON & PDF)
+
+**Coming Soon:**
+
+* [ ] Batch processing (CSV input)
+* [ ] `invarum check` regression suites
+* [ ] Automated drift detection between runs
 
 ---
 
 ## 🧑‍🔬 Author
 
-**Lucretius Coleman**  
-PhD in Physics | Computational Methods | Quantum Systems & Prompt Engineering  
-📫 lacolem1@invarum.com
+**Lucretius Coleman**
+PhD in Physics | Computational Methods | Quantum Systems & Prompt Engineering
+[lacolem1@invarum.com](mailto:lacolem1@invarum.com)
 
 ---
 
 ## 📄 License
 
-MIT License  
-See `LICENSE` for details.
+MIT — see `LICENSE`.

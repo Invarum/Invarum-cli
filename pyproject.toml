@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "invarum"
-version = "0.1.0"
+version = "0.1.5"
 description = "CLI for the Invarum Quality Engineering Platform"
 authors = [{name = "L. Adrian Coleman", email = "lacolem1@invarum.com"}]
 requires-python = ">=3.9"
