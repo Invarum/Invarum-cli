@@ -82,7 +82,7 @@ Invarum is designed for auditability without unnecessary data retention:
 Install directly via pip:
 
 ```bash
-pip install git+https://github.com/Invarum/invarum-cli.git
+pip install git+https://github.com/Invarum/invarum-cli.git@v0.1.5
 ```
 
 *Requires Python 3.9+*
