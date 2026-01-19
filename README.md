@@ -205,6 +205,19 @@ Invarum uses a thin client architecture:
 
 ---
 
+## ❓ Troubleshooting
+
+**"Command not found" after installation?**
+
+If you ran `pip install` but typing `invarum` gives an error, your computer's Python script directory might not be in your system PATH.
+
+You can fix this by adding the path to your environment variables, OR simply run the tool using `python -m`:
+
+```bash
+python -m invarum login
+python -m invarum run "Test prompt"
+
+---
 ## 🔬 Roadmap
 
 **MVP (Live Now):**

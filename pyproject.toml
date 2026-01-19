@@ -6,6 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "invarum"
 version = "0.1.6"
 description = "CLI for Invarum, the Governance-grade LLM Quality Engineering platform."
+readme = "README.md"
 authors = [{name = "L. Adrian Coleman", email = "lacolem1@invarum.com"}]
 requires-python = ">=3.9"
 dependencies = [
