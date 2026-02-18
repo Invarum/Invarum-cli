@@ -121,14 +121,14 @@ Run ID: run_a1b2c3d4
 │ ...                                                 │
 ╰─────────────────────────────────────────────────────╯
 
-┏━━━━━━━━━━━━━━━━━━━━┳━━━━━━━┓
-┃ Metric             ┃ Score ┃
-┡━━━━━━━━━━━━━━━━━━━━╇━━━━━━━┩
-│ Alpha (Task)       │ 0.892 │
-│ Beta (Coherence)   │ 0.910 │
-│ Gamma (Entropy)    │ 0.450 │
-│ Delta (Efficiency) │ 0.780 │
-└────────────────────┴───────┘
+┏━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━┓
+┃ Metric               ┃ Score ┃
+┡━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━┩
+│ Alpha (Task)         │ 0.892 │
+│ Beta (Coherence)     │ 0.910 │
+│ Gamma (Order/Entropy)│ 0.450 │
+│ Delta (Efficiency)   │ 0.780 │
+└──────────────────────┴───────┘
 
 Decision: PASS_WITH_ADVISORY
 Policy Profile: internal_governance_default
@@ -216,6 +216,7 @@ You can fix this by adding the path to your environment variables, OR simply run
 ```bash
 python -m invarum login
 python -m invarum run "Test prompt"
+```
 
 ---
 ## 🔬 Roadmap

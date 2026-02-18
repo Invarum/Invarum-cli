@@ -176,7 +176,7 @@ def run(
 
     table.add_row("Alpha (Task)",      fmt(metrics.get('alpha')))
     table.add_row("Beta (Coherence)",  fmt(metrics.get('beta')))
-    table.add_row("Gamma (Entropy)",   fmt(metrics.get('gamma')))
+    table.add_row("Gamma (Order/Entropy)",   fmt(metrics.get('gamma')))
     table.add_row("Delta (Efficiency)",fmt(metrics.get('delta')))
     
     console.print(table)
