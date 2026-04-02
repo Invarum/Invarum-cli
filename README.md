@@ -17,7 +17,8 @@ Use it to:
 
 If your team uses LLMs and needs more than “looks good to me,” Invarum gives you a structured way to measure, review, and prove output quality.
 
-> Get started at **[app.invarum.com](https://app.invarum.com)**
+> Get started at **[app.invarum.com](https://app.invarum.com)** 
+> Create an account-> go to settings -> create a key for CLI use -> submit API key for generation (not required for analysis of responses created elsewhere)
 
 ---
 
@@ -183,6 +184,8 @@ pip install git+https://github.com/Invarum/invarum-cli.git@v0.1.8
 ---
 
 ## Quickstart
+
+Create a CLI secret key at app.invarum.com/settings -> submit API key for generation (not required for analysis of responses created elsewhere)
 
 ### Authenticate
 ```bash
