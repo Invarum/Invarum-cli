@@ -1,249 +1,337 @@
-# ⚡ Invarum CLI 
 
-**Prompt it. Measure it. Fix it. Prove it. Bring certainty to LLM quality—and evidence.**
 
-The Invarum CLI is a thin, fast client for the Invarum Cloud Engine. Use it to run quantitative LLM evaluations, generate **audit-ready evidence bundles**, and enforce **policy gates** in CI/CD—without leaving the command line.
 
-> **Get started:** You need an Invarum account and API key.
-> Sign up at **[app.invarum.com](https://app.invarum.com)**.
+# Invarum CLI
 
----
+**Measure AI quality in business terms. Enforce policy. Export evidence.**
 
-## 📦 Features
+The Invarum CLI is the command-line entry point to the Invarum cloud engine: a governance-grade AI quality, observability, and evidence layer for LLM applications.
 
-### 1) Headless Invarum Engine
+Use it to:
+- run evaluations from your terminal
+- analyze precomputed responses
+- surface business-facing KPI signals
+- enforce policy gates in CI/CD
+- export evidence bundles and audit PDFs
+- inspect runs in the dashboard with diagnostics, traces, and sensitivity context
 
-Submit prompts to the Invarum Cloud, where they’re evaluated with the deterministic **4D Energy Model**.
+If your team uses LLMs and needs more than “looks good to me,” Invarum gives you a structured way to measure, review, and prove output quality.
 
-* **Live status:** stream progress and view the final response in your terminal
-* **Scoring:** get immediate **α / β / γ / δ** scores in a readable table
-
-### 2) Audit-Ready Evidence
-
-Export forensic artifacts for any run—ready to attach to an **incident review** or internal audit packet.
-
-* **JSON evidence bundle:** machine-readable export containing scores, policy outcomes, metadata, and **SHA-256** integrity hashes
-* **PDF report:** download a formatted audit report via the CLI
-
-### 3) CI/CD Gating
-
-Stop bad prompts from reaching production.
-
-* Use `--strict` to return **exit code 1** when a run fails policy gates
-* Ideal for GitHub Actions, GitLab CI, and regression test suites
-
-### 4) Enterprise Observability (OTel)
-
-Invarum is **OpenTelemetry (OTel) native**.
-
-* Each run can emit standard OTel traces
-* Connect Datadog, Honeycomb, or New Relic to view quality signals alongside operational telemetry
+> Get started at **[app.invarum.com](https://app.invarum.com)**
 
 ---
 
-## ⚛️ The Invarum Engine
+## Why Invarum
 
-Unlike “LLM-as-a-judge” tools that depend on subjective model opinions, Invarum evaluates outputs using a deterministic pipeline and returns **repeatable scores**, **policy gate decisions**, and **audit-ready evidence bundles** suitable for **incident review** and internal governance.
+Most prompt tools help you test outputs. 
 
-### The 4D Energy Model
+Invarum is built to help you **measure, govern, and defend** them. 
 
-We measure LLM behavior along four orthogonal axes:
+It combines:
+- **business-facing KPIs** for Helpfulness, Reliability, and Efficiency
+- **technical quality metrics** underneath the KPI layer
+- **policy-aware verdicts** with explicit decision states and advisories
+- **audit-ready artifacts** with evidence exports and integrity metadata
+- **dashboard inspection** for diagnostics, traces, and investigation
+- **a thin-client architecture** so proprietary evaluation logic stays in the hosted engine
 
-| Metric                | Signal                     | What it Measures                                                                                                             |
-| :-------------------- | :------------------------- | :--------------------------------------------------------------------------------------------------------------------------- |
-| **α TaskScore**       | **Task alignment**         | Did the output follow the request and constraints (format, requirements, and reference match when provided)?                 |
-| **β Coherence**       | **Semantic continuity**    | Did the response stay on-track—logically consistent, well-structured, and free of drift or contradiction?                    |
-| **γ Entropy / Order** | **Variance & determinism** | Is output variability appropriate for the domain and task (stable for scientific/legal; broader for creative/brainstorming)? |
-| **δ Efficiency**      | **Cost-to-value**          | How much useful information was delivered per token (and time), relative to the expected structure and verbosity?            |
-
-> The physics analogy is intentional: scores behave like measurable state variables, and policy gates define what “stable” looks like for a given domain.
-
-### Policy-as-Code Gating
-
-Runs are evaluated against a selected **Policy Profile** (internal governance by default). The engine returns:
-
-* **Gate results** (must-pass requirements and scored thresholds)
-* An overall verdict plus an explicit decision state:
-  **pass / pass_with_advisory / fail_with_advisory / fail**
-* Structured **advisories** with recommended remediation steps
-
-### Security & Privacy
-
-Invarum is designed for auditability without unnecessary data retention:
-
-1. **BYOK:** your LLM API keys are encrypted at rest and never exposed in plaintext.
-2. **Configurable I/O retention:** prompts and responses can be stored temporarily for debugging or minimized/redacted depending on workspace policy.
-3. **Immutable evidence:** evidence bundles retain **SHA-256** hashes and run metadata for integrity verification—even when raw text retention is minimized.
+That makes the CLI useful across the org:
+- **Developers:** run evals, compare outputs, automate checks
+- **AI platform teams:** investigate failures, inspect traces, monitor release quality
+- **Risk / compliance / QA:** export evidence bundles and audit PDFs
+- **Leaders:** turn “we tested it” into a measurable quality and governance story
 
 ---
 
-## 🚀 Installation
+## Start with the KPI layer
 
-Install directly via pip:
+Invarum translates technical evaluation into business-friendly signals:
+- **Helpfulness** — did the system accomplish the task?
+- **Reliability** — did it clear safety, policy, and stability checks?
+- **Efficiency** — did it deliver value at a reasonable cost?
 
-```bash
-pip install git+https://github.com/Invarum/invarum-cli.git@v0.1.6
+And for teams managing many runs:
+- **Reliability Pass Rate** — how often runs clear the reliability bar over time
+
+These KPIs are designed for fast operational reading. The deeper technical metrics remain available when you need them.
+
+---
+
+## The model underneath
+
+Behind the KPI layer, Invarum scores outputs across four core dimensions:
+
+| Metric | Signal | What it measures |
+|:---:|:---|:---|
+| **$\alpha$ (alpha)** | **TaskScore** | Did the output do the job it was asked to do? |
+| **$\beta$ (beta)** | **Coherence** | Did it stay logically and semantically on track? |
+| **$\gamma$ (gamma)** | **Order / Entropy** | Was the variability appropriate for the task and domain? |
+| **$\delta$ (delta)** | **Efficiency** | How much useful result was delivered for the cost in tokens, time, and steps? |
+
+The KPI layer makes the system legible to operators and decision-makers. The four-metric layer preserves technical depth for engineers, evaluators, and governance teams.
+
+---
+
+## What the CLI does
+
+### 1) Run evaluations
+Submit prompts to Invarum and get back a scored run with a response, KPI summary, technical metrics, and policy outcome.
+
+### 2) Analyze existing outputs
+Invarum can evaluate responses you already have. That means it can act as a validator and governance layer even when generation happens elsewhere.
+
+If you provide `--response` or `--response-file`, the CLI automatically switches to analyze mode unless you explicitly set `--exec`.
+
+This is especially useful for:
+- grading outputs from external LLM systems
+- auditing responses captured from production
+- evaluating structured multi-step or agent-like outputs in the analyze layer
+
+### 3) Score simulated agent behavior in analyze mode
+For imported multi-step or role-simulated outputs, Invarum can score agent-like behavior without becoming your production agent runtime.
+
+Advanced analyze-mode hints include:
+- `--structure-mode single`
+- `--structure-mode agent`
+- `--structure-mode sim_agent`
+- `--micro-alpha` for per-virtual-step micro-alpha scoring in SIM-AGENT workflows
+
+Use this when you want to inspect:
+- handoff quality across steps
+- stability across multi-step reasoning or workflow chains
+- whether an imported structured run should pass review thresholds before broader rollout
+
+### 4) Enforce policy in CI/CD
+Use `--strict` to return exit code `1` when a run fails policy gates. This acts as a powerful CI/CD gatekeeper for your prompts.
+
+```yaml
+# Example CI/CD gate
+- name: Certify Prompt Quality
+  run: |
+    invarum run -f prompts/onboarding.txt --strict
+    # Fails the build if the new prompt violates ISO 42001 or internal thresholds
 ```
 
-*Requires Python 3.9+*
+### 5) Export evidence
+Generate:
+- **JSON evidence bundles** for automation and downstream systems *(outputs a cryptographically hashed JSON receipt containing policy gates, model parameters, and metrics)*
+- **PDF audit reports** for incident review, governance, and stakeholder communication
+
+The CLI supports both inline save-on-run and standalone export.
+
+### 6) Investigate in the dashboard
+Move from terminal to the full run view to inspect:
+- KPI breakdowns
+- raw $\alpha$ / $\beta$ / $\gamma$ / $\delta$
+- policy decisions and failed gates
+- advisories
+- traces and operator spans
+- **Sensitivity Analysis (Wind Tunnel)** to see how mathematically fragile a prompt is to minor structural changes
 
 ---
 
-## ⚡ Quickstart
+## Governance and evidence
 
-### 1) Get an API Key
+A run can produce more than a score. Invarum also returns:
 
-Log in to the dashboard: **Settings → Developer Access Keys**.
+- policy gate results
+- explicit decision states
+- advisories with remediation-oriented guidance
+- evidence artifacts for export and review
+- integrity metadata for verification workflows
 
-### 2) Authenticate
+This is the difference between a testing utility and a quality/evidence layer.
 
-Save your key locally. This persists until you revoke it.
+---
 
+## Architecture
+
+Invarum uses a thin-client architecture.
+
+```text
+[CLI] -> [API] -> [Invarum evaluation engine] ->[runs, traces, evidence, audit artifacts]
+   ^                                                          |
+   |----------------------------------------------------------|
+                      summarized results + exports
+```
+
+**What runs locally:**
+- authentication
+- file input/output
+- request submission
+- terminal rendering
+- export handling
+
+**What runs in the cloud engine:**
+- scoring
+- KPI computation
+- policy evaluation
+- diagnostics
+- evidence generation
+- audit artifact generation
+- trace and sensitivity processing
+
+---
+
+## Installation
+
+```bash
+pip install git+https://github.com/Invarum/invarum-cli.git@v0.1.8
+```
+*Requires Python 3.9+.*
+
+---
+
+## Quickstart
+
+### Authenticate
 ```bash
 invarum login --key inv_sk_your_secret_key_here
 ```
+Or in CI:
+```bash
+export INVARUM_API_KEY="inv_sk_..."
+```
 
-### 3) Run an Evaluation
-
+### Run an evaluation
 ```bash
 invarum run "Summarize the main findings of this abstract in 5 bullets." --domain scientific
 ```
 
-**Example Output:**
-
-```text
-Running evaluation...
-Run ID: run_a1b2c3d4
-
-╭─ LLM Response ──────────────────────────────────────╮
-│ 1. The study establishes a correlation between...   │
-│ 2. Methodology involved a double-blind trial...     │
-│ ...                                                 │
-╰─────────────────────────────────────────────────────╯
-
-┏━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━┓
-┃ Metric               ┃ Score ┃
-┡━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━┩
-│ Alpha (Task)         │ 0.892 │
-│ Beta (Coherence)     │ 0.910 │
-│ Gamma (Order/Entropy)│ 0.450 │
-│ Delta (Efficiency)   │ 0.780 │
-└──────────────────────┴───────┘
-
-Decision: PASS_WITH_ADVISORY
-Policy Profile: internal_governance_default
-View details: https://app.invarum.com/runs/run_a1b2c3d4
+### Analyze an existing output
+```bash
+invarum run "Review this customer support response." \
+  --response "Thanks for your patience. Your order has shipped..."
 ```
 
-> Tip: Open “View details” to inspect diagnostics, sensitivity analysis, and operator traces in the dashboard.
-
----
-
-## 🛠 Advanced Usage
-
-### Reference-Based Grading
-
-Provide a gold-standard answer to enable higher-fidelity grading when appropriate.
-
+### Analyze from file
 ```bash
-invarum run "Explain quantum entanglement" --reference "Quantum entanglement is a phenomenon where..."
+invarum run "Review this structured support workflow output." \
+  --response-file workflow_output.json
 ```
 
-Load from files:
-
+### Save the evidence bundle during a run
 ```bash
-invarum run -f prompt.txt --reference-file ground_truth.txt
+invarum run "Extract all dates from this contract." \
+  --task extract \
+  --domain legal \
+  --output evidence.json
 ```
 
-### Task, Domain, and Generation Overrides
-
-Help classification or tune generation.
-
+### Export a JSON evidence bundle
 ```bash
-# Specify task and domain
-invarum run "extract dates from this contract" --task extract --domain legal
-
-# Override model temperature
-invarum run "Write a creative poem" --temp 0.9
-```
-
-### Export Evidence (Incident Review / Audit Packet)
-
-```bash
-# Export JSON evidence bundle
 invarum export run_a1b2c3d4 --format json --output evidence.json
+```
+Or pipe JSON to stdout:
+```bash
+invarum export run_a1b2c3d4 --format json
+```
 
-# Export formatted PDF audit report
+### Export a PDF audit report
+```bash
 invarum export run_a1b2c3d4 --format pdf --output report.pdf
 ```
 
-### CI/CD Integration
-
-The CLI supports environment variables for automation.
-
+### Fail CI on policy failure
 ```bash
-export INVARUM_API_KEY="inv_sk_..."
-
-# --strict forces a non-zero exit code on policy failure
-invarum run -f prompt.txt --strict --json > results.json
+invarum run -f prompt.txt --strict --json
 ```
 
 ---
 
-## 🧠 Architecture
+## Common workflows
 
-Invarum uses a thin client architecture:
-
-1. **CLI (this repo):** auth, file IO, request formatting, and rendering. No proprietary scoring logic runs locally.
-2. **Cloud engine:** prompts are evaluated by the PBPEF pipeline, producing scores, policy outcomes, traces, and evidence artifacts.
-
+### Evaluate against a reference
+```bash
+invarum run "Explain quantum entanglement." \
+  --reference "Quantum entanglement is a phenomenon where..."
 ```
-[CLI] → [API Gateway] → [PBPEF Pipeline] → [Run Record + Evidence]
-  ↑                                                  ↓
-  └────────────── summarized results ────────────────┘
+
+### Use a reference file
+```bash
+invarum run "Compare this answer to the approved response." \
+  --reference-file approved_answer.txt
+```
+
+### Be explicit about analyze mode
+```bash
+invarum run "Review this structured support workflow output." \
+  --exec analyze \
+  --response-file workflow_output.json
+```
+
+### Score a SIM-AGENT-style imported workflow
+```bash
+invarum run "Review this structured multi-step workflow output." \
+  --exec analyze \
+  --response-file workflow_output.json \
+  --structure-mode sim_agent \
+  --micro-alpha
+```
+
+### Tune generation
+```bash
+invarum run "Write a creative poem" --temp 0.9
 ```
 
 ---
 
-## ❓ Troubleshooting
+## Who this is for
 
-**"Command not found" after installation?**
+### Developers
+Use Invarum to test prompts, score outputs, automate checks, and wire evaluations into delivery workflows.
 
-If you ran `pip install` but typing `invarum` gives an error, your computer's Python script directory might not be in your system PATH.
+### AI platform teams
+Use it to centralize run evaluation, compare outputs, inspect traces, and review imported outputs from other systems.
 
-You can fix this by adding the path to your environment variables, OR simply run the tool using `python -m`:
+### Compliance, QA, and risk
+Use evidence bundles and audit PDFs to support review, signoff, and governance processes.
 
+### Founders and executives
+Use Invarum when AI quality needs to be measurable, reviewable, and explainable to customers, partners, or internal stakeholders.
+
+---
+
+## Observability
+
+Invarum can integrate with OpenTelemetry-style workflows so traces and metrics can sit alongside broader system telemetry.
+
+---
+
+## Security and data handling
+
+Invarum is designed for auditability without forcing unnecessary retention. Key ideas include:
+
+- BYOK-oriented generation workflows
+- configurable prompt/response retention behavior
+- evidence artifacts that preserve integrity metadata even when raw text handling is minimized
+
+---
+
+## Troubleshooting
+
+### Command not found after install
 ```bash
-python -m invarum login
+python -m invarum --version
+python -m invarum login --key inv_sk_your_secret_key_here
 python -m invarum run "Test prompt"
 ```
 
----
-## 🔬 Roadmap
+### Not logged in
+```bash
+invarum login --key inv_sk_your_secret_key_here
+```
 
-**MVP (Live Now):**
+### Evidence not ready yet
+If a run completes before evidence is available, retry the export command after a short delay.
 
-* [x] Cloud-based energy scoring (α/β/γ/δ)
-* [x] Policy gating & exit codes
-* [x] Web dashboard sync
-* [x] Evidence export (JSON & PDF)
-
-**Coming Soon:**
-
-* [ ] Batch processing (CSV input)
-* [ ] `invarum check` regression suites
-* [ ] Automated drift detection between runs
+### PDF export requires an output file
+```bash
+invarum export run_a1b2c3d4 --format pdf --output report.pdf
+```
 
 ---
 
-## 🧑‍🔬 Author
+## License
 
-**Lucretius Coleman**
-PhD in Physics | Computational Methods | Quantum Systems & Prompt Engineering
-[lacolem1@invarum.com](mailto:lacolem1@invarum.com)
-
----
-
-## 📄 License
-
-MIT — see `LICENSE`.
+MIT

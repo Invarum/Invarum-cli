@@ -24,7 +24,11 @@ class InvarumClient:
         task: str, 
         domain: str,
         reference: str = None,
-        temperature: float = None
+        temperature: float = None,
+        execution_mode: str = "generate",
+        structure_mode: str = None,
+        response_body: str = None,
+        enable_micro_alpha: bool = False
     ) -> Dict[str, Any]:  
         """Submits a run and returns the full response object"""
         url = f"{self.base_url}/runs"
@@ -32,14 +36,22 @@ class InvarumClient:
         payload = {
             "prompt": prompt, 
             "task": task, 
-            "domain": domain
+            "domain": domain,
+            "execution_mode": execution_mode,
+            "enable_micro_alpha": enable_micro_alpha
         }
         
+        if structure_mode is not None:
+            payload["structure_mode"] = structure_mode
+
         if reference:
             payload["reference"] = reference
 
         if temperature is not None:
             payload["temperature"] = temperature
+
+        if response_body:
+            payload["response_body"] = response_body
 
         try:
             resp = requests.post(

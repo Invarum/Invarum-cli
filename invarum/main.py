@@ -48,10 +48,33 @@ def run(
     reference: str = typer.Option(None, "--reference", "-r", help="Reference text for comparison"),
     reference_file: Path = typer.Option(None, "--reference-file", "-rf", help="Path to reference text file", exists=True),
     # -----------------
+    exec_mode: str = typer.Option(
+        "generate",
+        "--exec",
+        "-x",
+        help="Execution mode: 'generate' calls the LLM; 'analyze' evaluates an existing response."
+    ),
+    response_text_arg: str = typer.Option(
+        None,
+        "--response",
+        help="Existing response text to evaluate. Providing this automatically switches to analyze mode unless --exec is explicitly set."
+    ),
+    response_file: Path = typer.Option(
+        None,
+        "--response-file",
+        help="Path to an existing response to evaluate. Providing this automatically switches to analyze mode unless --exec is explicitly set.",
+        exists=True,
+    ),
     temperature: float = typer.Option(None, "--temp", help="Set generation temperature (0.0 - 1.0)"),
     json_out: bool = typer.Option(False, "--json", help="Output raw JSON"),
     output: Path = typer.Option(None, "--output", "-o", help="Save the full evidence bundle to a JSON file"),
     strict: bool = typer.Option(False, "--strict", help="Exit with code 1 if policy fails"),
+    micro_alpha: bool = typer.Option(False, "--micro-alpha", help="Compute micro alpha per virtual step (SIM-AGENT)"),
+    structure_mode: str = typer.Option(
+        None,
+        "--structure-mode",
+        help="Optional structure hint for analysis/generation. Examples: 'single', 'agent', 'sim_agent'."
+    ),
 ):
     """
     Run a prompt through the Invarum engine.
@@ -72,6 +95,24 @@ def run(
     elif reference:
         reference_text = reference
 
+    # 1c. Input Processing (Response & Mode Auto-Switching)
+    actual_response_body = None
+    if response_file:
+        actual_response_body = response_file.read_text(encoding="utf-8")
+    elif response_text_arg:
+        actual_response_body = response_text_arg
+
+    # Smart Logic: If response is provided, assume Analyze mode
+    if actual_response_body and exec_mode == "generate":
+        exec_mode = "analyze"
+        if not json_out:
+            console.print("[yellow]Info: Existing response detected. Switching to analyze mode.[/yellow]")
+
+    # Validation
+    if exec_mode == "analyze" and not actual_response_body:
+        console.print("[red]Error: Analyze mode requires --response or --response-file.[/red]")
+        raise typer.Exit(1)
+
     # 2. Auth
     key = config.get_api_key()
     if not key:
@@ -88,7 +129,11 @@ def run(
                 task=task, 
                 domain=domain, 
                 reference=reference_text,
-                temperature=temperature 
+                temperature=temperature,
+                execution_mode=exec_mode,
+                response_body=actual_response_body,
+                structure_mode=structure_mode,
+                enable_micro_alpha=micro_alpha,
             )
             
             run_id = response_data["run_id"]
@@ -143,6 +188,18 @@ def run(
     # 6. Human Friendly Display 
     # --- UPDATED: Fetch & Display Response ---
     evidence = client.get_run_evidence(run_id)
+
+    decision_state = ((evidence.get("gates") or {}).get("decision_state"))
+    if decision_state:
+        console.print(f"[bold]Decision State:[/bold] [cyan]{decision_state}[/cyan]")
+
+    advisories = ((evidence.get("gates") or {}).get("advisories") or [])
+    if advisories:
+        first = advisories[0] or {}
+        if first.get("evaluation_mode"):
+            console.print(f"[bold]Evaluation Mode:[/bold] [cyan]{first.get('evaluation_mode')}[/cyan]")
+        if first.get("suggestion_subtype"):
+            console.print(f"[bold]Suggestion Subtype:[/bold] [cyan]{first.get('suggestion_subtype')}[/cyan]")
     
     # Look in top level (old way) OR inside artifacts (new DB way)
     artifacts = evidence.get("artifacts") or {}
